@@ -14,9 +14,10 @@ using Lazy
 
 # For predicting with a RESDAC model
 function RESDAC_predict(item, idsarray, data, labels)
+  println(idsarray) #==#
   map(
     ids ->
-      SIDAC_predict(item, ids, data, labels),
+      sp(SIDAC_predict(item, ids, data, labels)), #==#
     idsarray
   )
 end
@@ -25,35 +26,47 @@ end
 function RESDAC_train(data, labels, n_models)
   map(
     _ ->
-      SIDAC_train(RESDAC_segment(data, labels), labels),
+      sp("IDS: ", SIDAC_train(sp(RESDAC_segment(data, labels)), labels)), #==#
     1 : n_models
   )
 end
+
+function sp(x, y) #==#
+  println(x) #==#
+  println(y) #==#
+  y #==#
+end #==#
+
+sp(x) = sp("", x) #==#
 
 # For gathering a segment of the data
 function RESDAC_segment(data, labels)
   fdict_tuples = filter(
     item ->
       item[1] != nothing,
-    zip(labels, data)
+    collect(zip(labels, data))
   )
+  println(fdict_tuples) #==#
   fdict_pairs = map(
     ( @λ (a, b) ->
       a => b
     ),
     fdict_tuples
   )
-  data_sections = Dict(fdict_pairs...)
+  println(fdict_pairs) #==#
+  data_sections = build_array_dict(fdict_pairs)
+  println(data_sections) #==#
   opt_labels = unique(filter(
     item ->
       item != nothing,
     labels
   ))
-  collect(flatten(map(
+  println(opt_labels) #==#
+  sp(collect(Iterators.flatten(map( #==#
     label ->
       rand_select_ratio(1 / 3, data_sections[label]),
-    opt_label
-  )))
+    opt_labels
+  )))) #==#
 end
 
 # For predicting with a SIDAC model
@@ -209,8 +222,36 @@ function rand_select_ratio(r, coll)
     map(
       _ ->
         rand(1 : len_c),
-      1 : Int(floor(r * len_c))
+      1 : Int(ceil(r * len_c))
     )
   )
 end
+
+# Build a Dict of arrays
+function build_array_dict(pairs)
+  d = Dict(map(ckey -> ckey => [], map(first,pairs))...)
+  for i in pairs
+    push!(d[i.first], i.second)
+  end
+  d
+end
+
+data = [
+    [1.0, 2.0], [3.0, 4.0], [2.0, 3.0], [1.1, 3.2], [2.9, 2.9], [2.1, 3.1],
+    [1.1, 2.1], [3.1, 4.1], [2.1, 2.9], [1.2, 3.3], [2.8, 2.8], [2.2, 3.2],
+    [9.8, 9.8], [9.8, 9.9], [9.9, 9.9], [9.7, 9.7], [9.9, 9.7], [9.6, 9.8],
+    [9.7, 9.7], [9.7, 9.8], [9.8, 9.8], [9.6, 9.6], [9.7, 9.6], [9.6, 9.7]
+]
+labels = [
+    :malware, :malware, nothing, :malware, :malware, nothing,
+    nothing, :malware, nothing, nothing, :malware, nothing,
+    nothing, :safe, nothing, nothing, nothing, nothing,
+    nothing, nothing, :safe, nothing, :safe, nothing
+]
+model = RESDAC_train(data, labels, 3)
+println("Trained!")
+results = map(item -> RESDAC_predict(item, model, data, labels), data)
+map(x -> map(println, x), results)
+
+
 
