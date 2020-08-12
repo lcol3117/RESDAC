@@ -13,4 +13,4 @@ For information about SIDAC, see [lcol3117/SIDAC](https://www.github.com/lcol311
 ![](https://img.shields.io/badge/Does_it_work-NO-critical)  
 ![](https://img.shields.io/badge/Is_it_stable-NO-critical)  
 
-![](https://img.shields.io/badge/Julia-100%-success)  
+![](https://img.shields.io/badge/Julia-100%25-success)  
