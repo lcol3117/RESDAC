@@ -3,4 +3,4 @@ Random Ensemble Semisupervised Density Agglomerative Clustering. Written In Juli
 
 A random ensemble of SIDAC models.
 
-For information about SIDAC, see [lcol3117/SIDAC](github.com/lcol3117/SIDAC) . 
+For information about SIDAC, see [lcol3117/SIDAC](https://www.github.com/lcol3117/SIDAC) . 
