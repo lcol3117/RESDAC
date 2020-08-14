@@ -227,13 +227,20 @@ function rand_select_ratio(r, coll)
   )
 end
 
+# Get the second portion of a pair
+second(p ::Pair) = p.second
+
 # Build a Dict of arrays
 function build_array_dict(pairs)
-  d = Dict(map(ckey -> ckey => [], map(first,pairs))...)
-  for i in pairs
-    push!(d[i.first], i.second)
-  end
-  d
+  Dict(map(
+    pair ->
+      first(pair) => map(second, filter(
+        sub ->
+          first(sub) == first(pair),
+        pairs
+      )),
+    pairs
+  )...)
 end
 
 data = [
@@ -252,6 +259,4 @@ model = RESDAC_train(data, labels, 3)
 println("Trained!")
 results = map(item -> RESDAC_predict(item, model, data, labels), data)
 map(x -> map(println, x), results)
-
-
 
