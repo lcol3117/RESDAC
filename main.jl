@@ -51,8 +51,7 @@ function RESDAC_segment(data, labels)
     fdict_tuples
   )
   data_sections = build_array_dict(fdict_pairs)
-  opt_labels = filter(exval,labels)
-    |> unique
+  opt_labels = filter(exval,labels) |> unique
   chosen_l_tuples = map(
     label ->
       map(
@@ -61,18 +60,14 @@ function RESDAC_segment(data, labels)
         rand_select_ratio(1 / 3, data_sections[label])
       ),
     opt_labels
-  )
-    |> Iterators.flatten
-    |> collect
+  ) |> Iterators.flatten |> collect
   unlabeled_tuples = filter(
     ( @λ (label, _pt) ->
       label == nothing
     ),
     zip_l_d
   )
-  zip(vcat(chosen_l_tuples, unlabeled_tuples)...)
-    |> collect
-    |> reverse
+  zip(vcat(chosen_l_tuples, unlabeled_tuples)...) |> collect |> reverse
 end
 
 # For predicting with a SIDAC model
