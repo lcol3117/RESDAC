@@ -37,7 +37,7 @@ sp(x) = let; println(x); x; end
 function RESDAC_segment(data, labels)
   zip_l_d = collect(zip(labels,  data))
   fdict_tuples = filter(
-    ( @λ (label, pt) ->
+    ( @λ (label, _pt) ->
       exval(label)
     ),
     zip_l_d
@@ -52,11 +52,7 @@ function RESDAC_segment(data, labels)
   println(fdict_pairs) #==#
   data_sections = build_array_dict(fdict_pairs)
   println(data_sections) #==#
-  opt_labels = unique(filter(
-    item ->
-      item != nothing,
-    labels
-  ))
+  opt_labels = unique(filter(exval,labels))
   println(opt_labels) #==#
   chosen_l_pts = collect(Iterators.flatten(map( #==#
     label ->
@@ -67,12 +63,14 @@ function RESDAC_segment(data, labels)
   unlabeled_pts = map(
     ( @λ (_label, pt) -> pt),
     filter(
-      ( @λ (label, pt) ->
+      ( @λ (label, _pt) ->
         label == nothing,
       ),
       zip_l_d
     )
   )
+  println(unlabeled_pts) #==#
+  vcat(chosen_l_pts, unlabeled_pts)
 end
 
 # For predicting with a SIDAC model
