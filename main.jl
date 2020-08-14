@@ -26,18 +26,12 @@ end
 function RESDAC_train(data, labels, n_models)
   map(
     _ ->
-      sp("IDS: ", SIDAC_train(sp(RESDAC_segment(data, labels)), labels)), #==#
+      sp(SIDAC_train(sp(RESDAC_segment(data, labels)), labels)), #==#
     1 : n_models
   )
 end
 
-function sp(x, y) #==#
-  println(x) #==#
-  println(y) #==#
-  y #==#
-end #==#
-
-sp(x) = sp("", x) #==#
+sp(x) = let; println(x); x; end
 
 # For gathering a segment of the data
 function RESDAC_segment(data, labels)
@@ -70,11 +64,14 @@ function RESDAC_segment(data, labels)
     opt_labels
   )))
   println(chosen_l_pts) #==#
-  unlabeled_pts = filter(
-    ( @λ (label, pt) ->
-      exval(label
-    ),
-    zip_l_d
+  unlabeled_pts = map(
+    ( @λ (_label, pt) -> pt),
+    filter(
+      ( @λ (label, pt) ->
+        label == nothing,
+      ),
+      zip_l_d
+    )
   )
 end
 
