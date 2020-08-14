@@ -41,10 +41,12 @@ sp(x) = sp("", x) #==#
 
 # For gathering a segment of the data
 function RESDAC_segment(data, labels)
+  zip_l_d = collect(zip(labels,  data))
   fdict_tuples = filter(
-    item ->
-      item[1] != nothing,
-    collect(zip(labels, data))
+    ( @λ (label, pt) ->
+      exval(label)
+    ),
+    zip_l_d
   )
   println(fdict_tuples) #==#
   fdict_pairs = map(
@@ -62,11 +64,18 @@ function RESDAC_segment(data, labels)
     labels
   ))
   println(opt_labels) #==#
-  sp(collect(Iterators.flatten(map( #==#
+  chosen_l_pts = collect(Iterators.flatten(map( #==#
     label ->
       rand_select_ratio(1 / 3, data_sections[label]),
     opt_labels
-  )))) #==#
+  )))
+  println(chosen_l_pts) #==#
+  unlabeled_pts = filter(
+    ( @λ (label, pt) ->
+      exval(label
+    ),
+    zip_l_d
+  )
 end
 
 # For predicting with a SIDAC model
