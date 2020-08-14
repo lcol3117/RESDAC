@@ -37,6 +37,7 @@ sp(x) = let; println(x); x; end
 
 # For gathering a segment of the data
 function RESDAC_segment(data, labels)
+  return [data, labels]
   zip_l_d = collect(zip(labels,  data))
   fdict_tuples = filter(
     ( @λ (label, _pt) ->
@@ -56,7 +57,7 @@ function RESDAC_segment(data, labels)
     label ->
       map(
         item ->
-          (label, item)
+          (label, item),
         rand_select_ratio(1 / 3, data_sections[label])
       ),
     opt_labels
@@ -83,6 +84,7 @@ end
 
 # For training a SIDAC model
 function SIDAC_train(data, labels)
+  println(Dict(:data => data, :labels => labels))
   scan = filter(x -> !same(x), product([data, data]))
   dims = length(data[1])
   scores = map(
