@@ -12,12 +12,14 @@ using Statistics
 using MLStyle
 using Lazy
 
+println("Loaded!")
+
 # For predicting with a RESDAC model
 function RESDAC_predict(item, idsarray, data, labels)
-  println(idsarray) #==#
+  println(idsarray)
   map(
     ids ->
-      sp(SIDAC_predict(item, ids, data, labels)), #==#
+      sp(SIDAC_predict(item, ids, data, labels)),
     idsarray
   )
 end
@@ -26,7 +28,7 @@ end
 function RESDAC_train(data, labels, n_models)
   map(
     _ ->
-      sp(SIDAC_train(sp(RESDAC_segment(data, labels)), labels)), #==#
+      SIDAC_train(RESDAC_segment(data, labels)...),
     1 : n_models
   )
 end
@@ -42,35 +44,35 @@ function RESDAC_segment(data, labels)
     ),
     zip_l_d
   )
-  println(fdict_tuples) #==#
   fdict_pairs = map(
     ( @λ (a, b) ->
       a => b
     ),
     fdict_tuples
   )
-  println(fdict_pairs) #==#
   data_sections = build_array_dict(fdict_pairs)
-  println(data_sections) #==#
-  opt_labels = unique(filter(exval,labels))
-  println(opt_labels) #==#
-  chosen_l_pts = collect(Iterators.flatten(map( #==#
+  opt_labels = filter(exval,labels)
+    |> unique
+  chosen_l_tuples = map(
     label ->
-      rand_select_ratio(1 / 3, data_sections[label]),
-    opt_labels
-  )))
-  println(chosen_l_pts) #==#
-  unlabeled_pts = map(
-    ( @λ (_label, pt) -> pt),
-    filter(
-      ( @λ (label, _pt) ->
-        label == nothing,
+      map(
+        item ->
+          (label, item)
+        rand_select_ratio(1 / 3, data_sections[label])
       ),
-      zip_l_d
-    )
+    opt_labels
   )
-  println(unlabeled_pts) #==#
-  vcat(chosen_l_pts, unlabeled_pts)
+    |> Iterators.flatten
+    |> collect
+  unlabeled_tuples = filter(
+    ( @λ (label, _pt) ->
+      label == nothing
+    ),
+    zip_l_d
+  )
+  zip(vcat(chosen_l_tuples, unlabeled_tuples)...)
+    |> collect
+    |> reverse
 end
 
 # For predicting with a SIDAC model
